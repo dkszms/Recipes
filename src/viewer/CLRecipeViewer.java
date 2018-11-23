@@ -1,8 +1,8 @@
 package viewer;
 
-import model.Recipe;
+import java.util.ArrayList;
 
-import java.util.List;
+import model.Recipe;
 //상속구조
 public class CLRecipeViewer extends RecipeViewer {//command line용으로 작성.
     public CLRecipeViewer(){
@@ -14,6 +14,16 @@ public class CLRecipeViewer extends RecipeViewer {//command line용으로 작성
         System.out.println(buildDescriptionString(recipe));
     }
     private String buildDescriptionString(Recipe recipe) {
-        return "This recipe is " + recipe.getRecipeName();
+    	
+    	String recipeName = recipe.getRecipeName();
+    	ArrayList<String> recipeList = recipe.getRecipeList();
+    	String recipeDesc = ""; 
+    	
+    	for(int i = 0 ; i<recipeList.size() ; i++) {
+    		recipeDesc += "\n" + (i+1) + " : "+recipeList.get(i).toString();
+    		
+    	}
+    	
+        return "This recipe is " + recipeName + recipeDesc;
     }
 }
