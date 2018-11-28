@@ -1,6 +1,6 @@
 package model;
 
-import java.util.HashMap;
+import java.util.List;
 
 public class Recipe {
 
@@ -8,17 +8,8 @@ public class Recipe {
 	private double quantity;
 	private String simpleDesc;
 	private String image;
-	private RecipeDirections directions;
+	private List<RecipeDirection> directions;
 	private String ingredients;
-
-	public Recipe(String q) {
-		recipeName = q;
-		quantity = 10.0;
-		simpleDesc = "cherry + brandy + sugar";
-		image = "This is an image";
-		directions = RecipeDirections.getMockDirections();
-		ingredients = "cherry: 5 ea\nbrandy: 10 bottles\nsugar 1kg";
-	}
 
 	public String getRecipeName() {
 		return recipeName;
@@ -52,11 +43,11 @@ public class Recipe {
 		this.image = image;
 	}
 
-	public RecipeDirections getDirections() {
+	public List<RecipeDirection> getDirections() {
 		return this.directions;
 	}
 
-	public void setDirections(RecipeDirections directions) {
+	public void setDirections(List<RecipeDirection> directions) {
 		this.directions = directions;
 	}
 

@@ -24,7 +24,7 @@ public class Main {
 
 		//필수적이지 않은 스텝은 제거.
         /*
-        recipe.setQuantity(3);
+        recipe.setCoefficient(3);
         String recipeList = "";
 		for(int i = 0 ; i < recipe.recipeMap.size() ; i++) {
 			recipeList += "\n"+i+" : "+recipe.recipeMap.get((1+i));
