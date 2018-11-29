@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  * @author kbshin on 2018. 11. 28.
  * @project Recipes
  */
-public class RecipeStringParserTest {
+public class IteratingExcelRecipeReaderTest {
 
     private void init(){
 

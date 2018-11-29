@@ -1,9 +1,10 @@
 package util;
 
-import com.sun.rowset.internal.Row;
 import model.*;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +13,31 @@ import java.util.regex.Pattern;
  * TODO: iterating recipeStringParser
  * @author kbshin on 2018. 11. 28.
  */
-public abstract class RecipeStringParser {
+public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를 만들 수 없음. static만 있는 경우 사용하기 좋음
+    //private Sheet
+
+    public IteratingExcelRecipeReader(File excelFile){//GUI, 너의 데이터베이스 파일 위치를 줘라.
+        //excel file 자체 자격검증
+        //Sheet만 할당.
+    }
+
+    public List<Recipe> exampleMethod(){//FileRepository에서 다루든지 다른 통합 Reader에서 다룰 것.
+        File excelFile = new File("");
+        IteratingExcelRecipeReader reader = new IteratingExcelRecipeReader(excelFile);
+        List<Recipe> recipes = new ArrayList<>();
+        for (Recipe recipe : reader){
+            recipes.add(recipe);
+        }
+        return recipes;
+    }
+    //TODO: change method parameter type from List<String> to Row (POI)
+    /*
+    public static Recipe parseRecipeFromRow(Row row){
+        List<String> recipeStrings = converter(row);//pseudo code
+        return parseRecipe(recipeStrings);
+    }
+    */
+
     public static Recipe parseRecipe(List<String> recipeString){
         Recipe recipe = new Recipe();
 
@@ -77,5 +102,29 @@ public abstract class RecipeStringParser {
         String unit = ings[2];
 
         return new Ingredient(name, amount, unit);
+    }
+    //TODO: check availability of next row.
+    private boolean hasNextRow(){
+        return false;
+    }
+
+    @Override
+    public Iterator<Recipe> iterator() {
+        Iterator<Recipe> recipeIterator = new Iterator<Recipe>() {
+
+            @Override
+            public boolean hasNext() {
+                //return hasNextRow();
+                throw new UnsupportedOperationException("work hard! Ahn!!");
+            }
+
+            @Override
+            public Recipe next() {
+                //Row -> Recipe
+                throw new UnsupportedOperationException("work hard! Ahn!!");
+                //return null;
+            }
+        };
+        return recipeIterator;
     }
 }
