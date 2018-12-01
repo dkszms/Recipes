@@ -38,8 +38,8 @@ public class FileRecipeRepository {
 		for(Row row : sheet) {
 			//row의 Cell 1,2,3,을 name, qty, simpledesc로 정의
 			//4번째 이상의 cell은 정규식을 통해 나눈 후 Direction 생성
-			Recipe recipe = makeRecipe(row);
-			recipeList.add(recipe);
+//			Recipe recipe = makeRecipe(row);
+//			recipeList.add(recipe);
 		}
 		
 		//마지막에 List<Recipe>

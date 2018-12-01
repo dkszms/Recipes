@@ -1,13 +1,24 @@
 package util;
 
-import model.*;
-
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import model.Description;
+import model.DirectionElement;
+import model.Ingredient;
+import model.Recipe;
+import model.RecipeDirection;
 
 /**
  * TODO: iterating recipeStringParser
@@ -15,13 +26,22 @@ import java.util.regex.Pattern;
  */
 public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를 만들 수 없음. static만 있는 경우 사용하기 좋음
     //private Sheet
+	private Iterator<Row> rowItr;
 
-    public IteratingExcelRecipeReader(File excelFile){//GUI, 너의 데이터베이스 파일 위치를 줘라.
+    public IteratingExcelRecipeReader(File excelFile) throws InvalidFormatException, IOException{//GUI, 너의 데이터베이스 파일 위치를 줘라.
         //excel file 자체 자격검증
+    	
         //Sheet만 할당.
+    	XSSFWorkbook wb = new XSSFWorkbook(excelFile);
+    	
+    	Sheet sheet = wb.getSheetAt(0); // sheet 1개만 사용
+    	
+    	rowItr= sheet.rowIterator();
+    	
     }
 
-    public List<Recipe> exampleMethod(){//FileRepository에서 다루든지 다른 통합 Reader에서 다룰 것.
+    
+    public List<Recipe> exampleMethod() throws InvalidFormatException, IOException{//FileRepository에서 다루든지 다른 통합 Reader에서 다룰 것.
         File excelFile = new File("");
         IteratingExcelRecipeReader reader = new IteratingExcelRecipeReader(excelFile);
         List<Recipe> recipes = new ArrayList<>();
@@ -30,21 +50,30 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
         }
         return recipes;
     }
-    //TODO: change method parameter type from List<String> to Row (POI)
-    /*
-    public static Recipe parseRecipeFromRow(Row row){
-        List<String> recipeStrings = converter(row);//pseudo code
-        return parseRecipe(recipeStrings);
-    }
-    */
-
-    public static Recipe parseRecipe(List<String> recipeString){
+    
+    
+    /**
+     * 엑셀 파일로부터 row를 받아 각 Element들로 분리한 후 Recipe에 세팅하여 반환
+     * @param recipeRow
+     * @return
+     */
+    public static Recipe parseRecipe(Row recipeRow){
+    	List<String> recipeStrings = new ArrayList<>();
+    	Iterator<Cell> cellItr = recipeRow.cellIterator();
+    	
+    	// recipeStrings 세팅
+    	while(cellItr.hasNext()) {
+    		Cell cell = cellItr.next();
+    		recipeStrings.add(cell.getStringCellValue());
+    	}
+    	
+    	
         Recipe recipe = new Recipe();
 
-        String name = recipeString.get(0);
-        double quantity = Double.parseDouble(recipeString.get(1));
-        String simpleDesc = recipeString.get(2);
-        List<String> directions = recipeString.subList(3,recipeString.size()-1);
+        String name = recipeStrings.get(0);
+        double quantity = Double.parseDouble(recipeStrings.get(1));
+        String simpleDesc = recipeStrings.get(2);
+        List<String> directions = recipeStrings.subList(3,recipeStrings.size()-1);
         List<RecipeDirection> recipeDirections = parseDirections(directions, quantity);
 
         recipe.setRecipeName(name);
@@ -115,16 +144,21 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
             @Override
             public boolean hasNext() {
                 //return hasNextRow();
-                throw new UnsupportedOperationException("work hard! Ahn!!");
+//                throw new UnsupportedOperationException("work hard! Ahn!!");
+            	System.out.println("hasnext");
+            	return true;
             }
 
             @Override
             public Recipe next() {
                 //Row -> Recipe
-                throw new UnsupportedOperationException("work hard! Ahn!!");
-                //return null;
+                //throw new UnsupportedOperationException("work hard! Ahn!!");
+            	System.out.println("NEXT!!");
+                return parseRecipe(rowItr.next());
             }
         };
         return recipeIterator;
     }
+    
+  
 }
