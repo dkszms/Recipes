@@ -11,8 +11,6 @@ public class RecipeRepository {
 
 	public List<Recipe> query(String recipeName) {
 		List<Recipe> mockRecipes = new ArrayList<>();
-		Recipe brandyWithCherry = new Recipe(recipeName);
-		mockRecipes.add(brandyWithCherry);
 		return mockRecipes;
 	}
 

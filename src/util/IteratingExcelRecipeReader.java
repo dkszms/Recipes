@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -37,7 +38,8 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
     	Sheet sheet = wb.getSheetAt(0); // sheet 1개만 사용
     	
     	rowItr= sheet.rowIterator();
-    	
+    	//skip header
+    	rowItr.next();
     }
 
     
@@ -58,22 +60,19 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
      * @return
      */
     public static Recipe parseRecipe(Row recipeRow){
-    	List<String> recipeStrings = new ArrayList<>();
-    	Iterator<Cell> cellItr = recipeRow.cellIterator();
-    	
-    	// recipeStrings 세팅
-    	while(cellItr.hasNext()) {
-    		Cell cell = cellItr.next();
-    		recipeStrings.add(cell.getStringCellValue());
-    	}
-    	
-    	
-        Recipe recipe = new Recipe();
+    	int lastCellNum = recipeRow.getLastCellNum();
 
-        String name = recipeStrings.get(0);
-        double quantity = Double.parseDouble(recipeStrings.get(1));
-        String simpleDesc = recipeStrings.get(2);
-        List<String> directions = recipeStrings.subList(3,recipeStrings.size()-1);
+    	Recipe recipe = new Recipe();
+
+        String name = recipeRow.getCell(0).getStringCellValue();
+        double quantity = recipeRow.getCell(1).getNumericCellValue();
+        String simpleDesc = recipeRow.getCell(2).getStringCellValue();
+
+        List<String> directions = new ArrayList<>();
+        for (int i = 3; i<lastCellNum;i++){
+            directions.add(recipeRow.getCell(i).getStringCellValue());
+        }
+
         List<RecipeDirection> recipeDirections = parseDirections(directions, quantity);
 
         recipe.setRecipeName(name);
@@ -111,7 +110,6 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
         List<DirectionElement> directionElements = new ArrayList<>();
         int before = 0 ;
         while(m.find()) {
-            System.out.println(m.start() + " @@@ " + m.group() + " ### " + m.end() );
             if(before < m.start()) {
                 directionElements.add(new Description(str.substring(before, m.start())));
             }
@@ -134,7 +132,7 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
     }
     //TODO: check availability of next row.
     private boolean hasNextRow(){
-        return false;
+        return rowItr.hasNext();//record format checker.
     }
 
     @Override
@@ -143,17 +141,11 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
 
             @Override
             public boolean hasNext() {
-                //return hasNextRow();
-//                throw new UnsupportedOperationException("work hard! Ahn!!");
-            	System.out.println("hasnext");
-            	return true;
+            	return rowItr.hasNext();
             }
 
             @Override
             public Recipe next() {
-                //Row -> Recipe
-                //throw new UnsupportedOperationException("work hard! Ahn!!");
-            	System.out.println("NEXT!!");
                 return parseRecipe(rowItr.next());
             }
         };
