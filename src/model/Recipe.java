@@ -11,6 +11,26 @@ public class Recipe {
 	private List<RecipeDirection> directions;
 	private String ingredients;
 
+	
+	//TODO toString 구현 필요
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		StringBuilder value = new StringBuilder();
+		value.append(recipeName + " ") ;
+		value.append(quantity + " ");
+		value.append(simpleDesc + " ");
+		for (RecipeDirection rd : directions) {
+			value.append(rd.getDescriptionString());
+			
+		}
+		
+		return value.toString();
+	}
+	
+	
+	
+	
 	public String getRecipeName() {
 		return recipeName;
 	}
