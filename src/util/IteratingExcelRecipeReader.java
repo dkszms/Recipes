@@ -30,8 +30,6 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
 	private Iterator<Row> rowItr;
 
     public IteratingExcelRecipeReader(File excelFile) throws InvalidFormatException, IOException{//GUI, 너의 데이터베이스 파일 위치를 줘라.
-        //excel file 자체 자격검증
-    	
         //Sheet만 할당.
     	XSSFWorkbook wb = new XSSFWorkbook(excelFile);
     	
@@ -42,24 +40,12 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
     	rowItr.next();
     }
 
-    
-    public List<Recipe> exampleMethod() throws InvalidFormatException, IOException{//FileRepository에서 다루든지 다른 통합 Reader에서 다룰 것.
-        File excelFile = new File("");
-        IteratingExcelRecipeReader reader = new IteratingExcelRecipeReader(excelFile);
-        List<Recipe> recipes = new ArrayList<>();
-        for (Recipe recipe : reader){
-            recipes.add(recipe);
-        }
-        return recipes;
-    }
-    
-    
     /**
      * 엑셀 파일로부터 row를 받아 각 Element들로 분리한 후 Recipe에 세팅하여 반환
-     * @param recipeRow
-     * @return
+     * @param recipeRow row containing Recipe description strings
+     * @return Recipe instance parsed from recipeRow
      */
-    public static Recipe parseRecipe(Row recipeRow){
+    public Recipe parseRecipe(Row recipeRow){
     	int lastCellNum = recipeRow.getLastCellNum();
 
     	Recipe recipe = new Recipe();
@@ -83,7 +69,7 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
         return recipe;
     }
 
-    private static List<RecipeDirection> parseDirections(List<String> directions, double originalQuantity){
+    public List<RecipeDirection> parseDirections(List<String> directions, double originalQuantity){
         List<RecipeDirection> recipeDirections= new ArrayList<>();
         for(String str : directions) {
             RecipeDirection recipeDirection = parseDirection(str, originalQuantity);
@@ -93,16 +79,15 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
         return recipeDirections;
     }
 
-    private static RecipeDirection parseDirection(String str, double originalQuantity) {
+    public RecipeDirection parseDirection(String str, double originalQuantity) {
         //정규식 구현
 
         List<DirectionElement> directionElements = getDirectionElements(str);
-        RecipeDirection recipedirection= new RecipeDirection(directionElements, originalQuantity);
 
-        return recipedirection;
+        return new RecipeDirection(directionElements, originalQuantity);
     }
 
-    private static List<DirectionElement> getDirectionElements(String str){
+    public List<DirectionElement> getDirectionElements(String str){
         //스트링을 받아서 정규식을 이용해 나눈다.
         Pattern p = Pattern.compile("\\[.*?\\]");
         Matcher m = p.matcher(str);
@@ -111,7 +96,7 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
         int before = 0 ;
         while(m.find()) {
             if(before < m.start()) {
-                directionElements.add(new Description(str.substring(before, m.start())));
+                directionElements.add(new Description(str.substring(before, m.start()).trim()));
             }
             directionElements.add(getIngredient(m.group()));// 메소드 통해서 배율을 곱해서 처리한다.
             before = m.end();
@@ -122,7 +107,7 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
         return directionElements;
     }
 
-    private static Ingredient getIngredient(String ingredientStr) {
+    public Ingredient getIngredient(String ingredientStr) {
         String[] ings  = ingredientStr.substring(1, ingredientStr.length()-1).split(",");
         String name = ings[0];
         double amount = Double.parseDouble(ings[1]);
@@ -130,6 +115,7 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
 
         return new Ingredient(name, amount, unit);
     }
+
     //TODO: check availability of next row.
     private boolean hasNextRow(){
         return rowItr.hasNext();//record format checker.
@@ -137,7 +123,7 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
 
     @Override
     public Iterator<Recipe> iterator() {
-        Iterator<Recipe> recipeIterator = new Iterator<Recipe>() {
+        return new Iterator<Recipe>() {
 
             @Override
             public boolean hasNext() {
@@ -149,8 +135,5 @@ public class IteratingExcelRecipeReader implements Iterable<Recipe> {//객체를
                 return parseRecipe(rowItr.next());
             }
         };
-        return recipeIterator;
     }
-    
-  
 }

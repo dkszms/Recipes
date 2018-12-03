@@ -1,44 +1,40 @@
 package repository;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import model.Recipe;
-import util.IteratingExcelRecipeReader;
 
-/**
- * TODO: Repository로 재작성.
- */
 public class FileRecipeRepository {
 	
-	static List<Recipe> recipeList = new ArrayList<>();
-	
-	//1. initialize
-	public FileRecipeRepository() throws InvalidFormatException, IOException {
-		// 파일을 읽어온다.
-		File file = new File ("resource/recipe_test.xlsx");
-		
-		XSSFWorkbook wb = new XSSFWorkbook(file);
-		
-		Sheet sheet = wb.getSheetAt(0);
-		
-		if(checkFileExtention(file)) {
-			IteratingExcelRecipeReader iter = new IteratingExcelRecipeReader(file); // 엑셀 파일을 조회하여 iterater를 생성한다.
-	        for(Recipe recipe : iter) {
-	            recipeList.add(recipe);
-	        }
-		}else {
-			System.out.println("입력 된 파일이 xlsx형식의 엑셀파일이 아닙니다.");
-		}
-		
-	}
-	
+	private List<Recipe> recipeList;
+	//private io 관련 하나 추가. add 했을 때 해당 파일에 써야 할 것. RecipeRepositoryWriter -> ExcelRecipeRepositoryWriter
+
+    FileRecipeRepository(List<Recipe> recipeList) {
+        this.recipeList = recipeList;
+    }
+
+    public void add(Recipe recipe){
+        recipeList.add(recipe);
+    }
+
+    public void update(Recipe recipe){
+        throw new UnsupportedOperationException("검색 메소드 상세 구현 이후에 구현될 예정.");
+//        for (Recipe repoRecipe: recipeList) {
+//            if (repoRecipe.equals(recipe)){//검색 메소드 받아와서 적용.
+//                repoRecipe = recipe;
+//            }
+//        }
+    }
+
+    public void remove(Recipe recipe){
+        recipeList.remove(recipe);
+    }
+
+    public List<Recipe> getAll(){
+        return recipeList;
+    }
+
 	public List<Recipe> query(String keyword) {
 		List<Recipe> resultList = new ArrayList<>();
 		for(Recipe recipe : recipeList) {
@@ -48,17 +44,5 @@ public class FileRecipeRepository {
 		}
 		
 		return resultList;
-	}
-
-	
-	public boolean checkFileExtention(File file){
-		   String fileName = file.getName();
-		   String ext = fileName.substring(fileName.indexOf(".")+1, fileName.length());
-		   boolean isXlsx = false;
-		   
-		   if(ext.equals("xlsx")) {
-			  isXlsx = true;
-		   }
-		return isXlsx;
 	}
 }
