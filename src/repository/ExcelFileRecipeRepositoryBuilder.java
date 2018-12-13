@@ -16,12 +16,12 @@ import java.util.List;
  * @author kbshin on 2018. 12. 3.
  */
 public class ExcelFileRecipeRepositoryBuilder {
+	
     public static FileRecipeRepository getInstance(File excelFile) throws IOException, InvalidFormatException {
         List<Recipe> recipeList = new ArrayList<>();
-        File file = new File ("resource/recipe_test.xlsx");
 
-        if(checkFileExtention(file)) {
-            IteratingExcelRecipeReader iter = new IteratingExcelRecipeReader(file); // 엑셀 파일을 조회하여 iterater를 생성한다.
+        if(checkFileExtention(excelFile)) {
+            IteratingExcelRecipeReader iter = new IteratingExcelRecipeReader(excelFile); // 엑셀 파일을 조회하여 iterater를 생성한다.
             for(Recipe recipe : iter) {
                 recipeList.add(recipe);
             }
